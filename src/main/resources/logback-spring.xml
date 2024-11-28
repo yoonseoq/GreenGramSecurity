@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration debug="true">
+    <!-- 로그 찍을 때 색상설정을 color라는 이름으로 색상지정을 한다-->
+    <conversionRule conversionWord="color"
+                    converterClass="org.springframework.boot.logging.logback.ColorConverter"/>
+    <property name="LOG_PATH" value="./logs"/>  <!-- ./현재 위치(프로그램이 실행되는 위치),LOG_PATH 변수 만듦 -->
+    <property name="LOG_PATH_NAME" value="loginfo"/>  <!-- ./현재 위치(프로그램이 실행되는 위치),LOG_PATH 변수 만 -->
+    <property name="LOG_PATTERN" value="[%d{yyyy-MM-dd HH:mm:ss}%color(%-5level){} %thread] %color([%logger]){cyan}%msg%n" />
+
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/${LOG_FILE_NAME}</file> <!-- ./log/logInfo.olg-->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/${LOG_FILE_NAME}_%d{yyyy-MM-dd}.log</fileNamePattern>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <charset>UTF-8</charset>
+            <pattern>${LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <charset>UTF-8</charset>
+            <pattern>${LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+    <root level="INFO">
+<!--        <appender-ref ref="FILE"/>-->
+        <appender-ref ref="CONSOLE"/>
+    </root>
+</configuration>

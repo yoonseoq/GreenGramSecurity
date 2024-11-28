@@ -1,4 +1,4 @@
-package com.green.yoonstagram.common;
+package com.green.greengramver2.common;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,7 +31,11 @@ MyFileUtils {
 
     public String makeFolders(String path) {
         File file = new File(uploadPath, path);
-        file.mkdirs();
+
+        if (!file.exists()){
+            //       if (!file.exists()) 거짓일때 실
+            file.mkdirs();// 존재한다면
+        }
         return file.getAbsolutePath();
         // getAbsolutePath() 절대주소를 가져온다는 의미인가?
     }
@@ -68,10 +72,3 @@ MyFileUtils {
 }
 
 
-class Test {
-    public static void main(String[] args) {
-        MyFileUtils myFileUtils = new MyFileUtils("C:/temp");
-        String randomFileName = myFileUtils.makeRandomFileName("sdvkljsdfajkldsfjkldsfljk.png");
-        System.out.println(randomFileName);
-    }
-}

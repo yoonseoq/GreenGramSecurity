@@ -1,4 +1,4 @@
-package com.green.yoonstagram.common;
+package com.green.greengramver2.common;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -30,5 +30,6 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     public void configurePathMatch(PathMatchConfigurer configurer) {
         // RestController의 모든 URL에 "/api" prefix를 설정
         configurer.addPathPrefix("api", HandlerTypePredicate.forAnnotation(RestController.class));
+        // 자동으로 api붙음
     }
 }

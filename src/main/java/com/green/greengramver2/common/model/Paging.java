@@ -1,4 +1,4 @@
-package com.green.yoonstagram.common.model;
+package com.green.greengramver2.common.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;

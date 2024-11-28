@@ -1,10 +1,12 @@
-package com.green.yoonstagram.common.model;
+package com.green.greengramver2.common.model;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
+@Setter
 @Builder
 public class ResultResponse<T> {
     @Schema(title = "결과 메시지")

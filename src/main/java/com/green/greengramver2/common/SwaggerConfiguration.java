@@ -1,4 +1,4 @@
-package com.green.yoonstagram.common;
+package com.green.greengramver2.common;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
