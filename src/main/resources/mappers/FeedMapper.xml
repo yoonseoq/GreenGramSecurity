@@ -4,8 +4,24 @@
 <mapper namespace="com.green.greengramver2.feed.FeedMapper">
     <insert id="insFeed" useGeneratedKeys="true" keyProperty="feedId">
         insert into feed
-            set writer_user_id = #{writerUserId},
+            set writer_user_id = #{userId},
                 contents = #{contents},
                 location = #{location}
     </insert>
+    <select id="selFeedList">
+        SELECT feed.feed_id AS feedId, contents, location, feed.created_at AS createdAt
+        , writer_user_id AS writerUserId
+        , if(user.nick_name IS NULL , uid, nick_name) AS writerNm
+        , pic AS writerPic
+        , IF(feed_like.feed_id IS NULL,0,1) as isLike
+        , feed_like.*
+        FROM feed
+        INNER JOIN  user
+        ON feed.writer_user_id=user.user_id
+        LEFT JOIN feed_like
+        ON feed_like.feed_id=feed.feed_id
+        AND feed_like.user_id=#{signedUserId}
+        ORDER BY FEED.feed_id DESC
+        LIMIT #{sIdx}, #{size}
+    </select>
 </mapper>

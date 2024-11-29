@@ -1,6 +1,5 @@
 package com.green.greengramver2.user;
 
-import com.green.greengramver2.common.MyFileUtils;
 import com.green.greengramver2.common.model.ResultResponse;
 import com.green.greengramver2.user.model.UserSignInReq;
 import com.green.greengramver2.user.model.UserSignInRes;
@@ -25,7 +24,7 @@ public class UserController {
         int result = service.postSignUp(p, pic );
         return ResultResponse.<Integer>builder().resultMessage("회원가입 완료").resultData(result).build();
     }
-    @GetMapping("sign-in")
+    @PostMapping("sign-in")
     public ResultResponse<UserSignInRes> signIn(@RequestBody UserSignInReq p) {
         UserSignInRes res = service.selUserList(p);
         return ResultResponse.<UserSignInRes>builder().resultMessage(res.getMessage()).resultData(res).build();
