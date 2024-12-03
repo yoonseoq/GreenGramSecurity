@@ -1,6 +1,6 @@
-package com.green.greengramver2.like;
+package com.green.greengramver2.feed.like;
 
-import com.green.greengramver2.like.model.FeedLikeReq;
+import com.green.greengramver2.feed.like.model.FeedLikeReq;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper

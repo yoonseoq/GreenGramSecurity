@@ -1,8 +1,6 @@
-package com.green.greengramver2.like;
+package com.green.greengramver2.feed.like;
 
-import com.green.greengramver2.common.model.ResultResponse;
-import com.green.greengramver2.feed.FeedService;
-import com.green.greengramver2.like.model.FeedLikeReq;
+import com.green.greengramver2.feed.like.model.FeedLikeReq;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 @RequiredArgsConstructor

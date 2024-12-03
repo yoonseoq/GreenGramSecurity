@@ -26,7 +26,7 @@ public class FeedController {
     @PostMapping
     public ResultResponse<FeedPostRes> postFeed(@RequestPart List<MultipartFile> pics,
                                                 @RequestPart FeedPostReq p) {
-        log.info("FeedController > getFeedList > p : {}",p);
+        log.info("FeedController > getFeedList > p : {}",p); // 이거 로그 일단 무권 짝어야함
         FeedPostRes res = service.postFeed(pics, p);
         List<FeedGetRes> list = new ArrayList<>();
         return ResultResponse.<FeedPostRes>builder()

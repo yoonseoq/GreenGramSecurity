@@ -1,4 +1,4 @@
-package com.green.greengramver2.like.model;
+package com.green.greengramver2.feed.like.model;
 
 import lombok.Getter;
 import lombok.Setter;
