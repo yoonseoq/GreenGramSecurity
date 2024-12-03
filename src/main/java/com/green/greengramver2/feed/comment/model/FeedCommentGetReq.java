@@ -5,6 +5,9 @@ import com.green.greengramver2.common.model.Paging;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.web.bind.annotation.BindParam;
+
+import java.beans.ConstructorProperties;
 
 @Getter
 @Setter
@@ -18,19 +21,29 @@ public class FeedCommentGetReq {
      final 이렇게 박제 해 놓은 건 한번 초기화한 이후 바뀔 수 없다
      */
 
-    @Schema(title = "피드 PK", example = "1",
-            requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(title = "피드 PK", example = "1", name = "feed_id"
+            ,requiredMode = Schema.RequiredMode.REQUIRED)
     private long feedId;
+    @Schema(title = "페이지", example = "1",
+            requiredMode = Schema.RequiredMode.REQUIRED)
+    private int page;
     @JsonIgnore
     private int sIdx;
     @JsonIgnore
     private int size;
 
+
+    public FeedCommentGetReq( @BindParam("feed_id") long feedId, int page) {
+        this.feedId = feedId;
+        setPage(page);
+    }
+
     public void setPage(int page) {
+        this.page = page;
         if (page < 1) {
-            return; // 그냥 튕겨버림 void 여서 0이나 음수값이면 아예 세팅 ㄴㄴ
+            return; //void 여서 0이나 음수값이면 아예 세팅 ㄴㄴ
         }
-        if (page == 1) { // 첫번째 사이즈 설정
+        if (page == 1) {
             sIdx = 0;
             size = FIRST_COMMENT_SIZE + 1; // +1은 isMore 처리
             return;

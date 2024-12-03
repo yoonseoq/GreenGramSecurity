@@ -87,26 +87,25 @@ public class FeedService {
             // 피드당 사진 리스트
             item.setPics(picList);
 
-            //피드당 댓글 리스트
-            FeedCommentGetReq commentGetReq = new FeedCommentGetReq();
-            commentGetReq.setPage(1);
-            commentGetReq.setFeedId(item.getFeedId());
-
+            //피드당 댓글 리스트 (필요한정보. 그 코멘트 페이지, 그리고 어떤 피드인지)
+            FeedCommentGetReq commentGetReq = new FeedCommentGetReq(item.getFeedId(),1);
             List<FeedCommentDto> commentList = feedCommentMapper.selFeedCommentList(commentGetReq);
-            // 쿼리문 보냈더니 리스트 보내줌 첫번째 페이지 0,4(최대값)
+
+            // feedCommentMapper 의 쿼리문에 commentGetReq 객체값 입력해서 보냈더니
+            // 리스트 보내줌 첫번째 페이지 0,4(최대값) 세팅
+            //FeedCommentDto 의 정보가 담긴 리스트를 보내준다
+            // 두개 이상일 경우는 리스트가 된다.
 
             FeedCommentGetRes commentGetRes = new FeedCommentGetRes();
             commentGetRes.setCommentList(commentList);
-            commentGetRes.setMoreComment(commentList.size() == 4);
+            commentGetRes.setMoreComment(commentList.size() == commentGetReq.getSize());
             // ??? commentGetRes.setMoreComment(commentList.size() == commentGetReq.getSize());
             // 댓글이 4개가 되면 거기부터 '더 보시겠습니까?' 의 문구란이 뜸
             if (commentGetRes.isMoreComment()){
-                commentList.remove(commentList.size()-1);
+                commentList.remove(commentList.size()-1); // 4개일때 하나를 빼는 것
             } // 누르묜 "더보기"라고 쓰인 문구가 사라지고 그 인덱스에 있던 원래댓글부터 지정한 사이즈(21)->20(댓글)+1(isMore)다 뜸
             item.setComment(commentGetRes);
         }
-        ;
-
 
         return list;
 
