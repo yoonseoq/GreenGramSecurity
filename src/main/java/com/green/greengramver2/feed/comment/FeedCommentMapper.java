@@ -12,5 +12,5 @@ import java.util.List;
 public interface FeedCommentMapper {
     int insFeedComment(FeedCommentPostReq p); // 댓글달기
     List<FeedCommentDto> selFeedCommentList(FeedCommentGetReq p); //댓글조회
-    int delFeedComment(FeedCommentDelReq p); //댓글삭제
+    int delFeedComment(FeedCommentDelReq p); //댓글삭제D
 }

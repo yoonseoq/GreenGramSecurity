@@ -40,7 +40,8 @@ public class UserService {
         myFileUtils.makeFolders(middlePath);
         String filePath = String.format("%s/%s", middlePath,savedPicName);
         try {
-            myFileUtils.transferTo((MultipartFile) pic,filePath);
+            // 멀티파트파일에 있는 데이터를 저기로 넘겨줌 그러면서 에러도 거기서 던짐
+            myFileUtils.transferTo(pic,filePath);
         }catch (IOException e){
             e.printStackTrace();
         }

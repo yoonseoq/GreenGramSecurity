@@ -21,5 +21,5 @@ public class FeedGetRes {
 
     private List<String> pics ;
     private FeedCommentGetRes comment;
-    //댓글관련정보 레퍼런스 변수 FeedCommentGetRes 의 주소값이 들어간다
+    //댓글관련정보 레퍼런스 변수 FeedCommentGetRes 의 주소값이 들어간다 즉 객체화함
 }
