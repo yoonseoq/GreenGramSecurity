@@ -34,7 +34,7 @@ public class FeedCommentGetReq {
     private int size;
 
 
-    @ConstructorProperties({"feed_id","sIdx","size"})
+    @ConstructorProperties({"feed_id","start_idx","size"})
     public FeedCommentGetReq(long feedId, int sIdx, Integer size) {
         this.feedId = feedId;
         this.sIdx = sIdx;

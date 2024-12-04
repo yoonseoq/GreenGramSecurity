@@ -82,15 +82,26 @@ public class FeedService {
     }
 
     public List<FeedGetRes> getFeedList(FeedGetReq p) {
+        // N+1 이슈 발생
         List<FeedGetRes> list = feedMapper.selFeedList(p);
         for (FeedGetRes item : list) {
             // 피드당 사진 리스트
             item.setPics(feedPicsMapper.selFeedPics(item.getFeedId()));
+        /*
+            각 방에 있는 주소값을 얻어와서 작업 피드 4개있다는 가정하에
+            피드당 사진리스트를 가져와서 그걸 사진마다 하나하나 가져온다.
+
+         */
 
             //피드당 댓글 리스트 (필요한정보. 그 코멘트 페이지, 그리고 어떤 피드인지)
             // 피드당 댓글 4개
             //
-            FeedCommentGetReq commentGetReq = new FeedCommentGetReq(item.getFeedId(),0,3);
+             /*
+             페이지로 처리하면 고정값으로 남아서 5번에 있는 댓글이 안넘어오고
+             페이지 뒤에 그대로 머무름 삭제되면 순번이 밀려야 하는데
+              */
+            FeedCommentGetReq commentGetReq = new FeedCommentGetReq(item.getFeedId(), 0, 3);
+            //입력한 사이즈+1 되도록 설정해놓음
             List<FeedCommentDto> commentList = feedCommentMapper.selFeedCommentList(commentGetReq);
 
             // feedCommentMapper 의 쿼리문에 commentGetReq 객체값 입력해서 보냈더니
@@ -107,12 +118,11 @@ public class FeedService {
             // 왜 4냐면 FeedCommentGetReq 클래스에
             // this.size = (size == null ? Constants.getDefault_page_size():size)+1; 이렇게 설정이 됨
 
-            if (commentGetRes.isMoreComment()){ //댓글이 더 있을시
-                commentList.remove(commentList.size()-1); // 4개일때 하나를 빼는 것
+            if (commentGetRes.isMoreComment()) { //댓글이 더 있을시
+                commentList.remove(commentList.size() - 1); // 4개일때 하나를 빼는 것
             } // 누르묜 "더보기"라고 쓰인 문구가 사라지고 그 인덱스에 있던 원래댓글부터 지정한 사이즈(21)->20(댓글)+1(isMore)다 뜸
             item.setComment(commentGetRes);
         }
-
         return list;
 
     }

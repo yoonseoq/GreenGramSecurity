@@ -10,8 +10,7 @@ import java.io.IOException;
 import java.util.UUID;
 @Slf4j
 @Component
-public class
-MyFileUtils {
+public class MyFileUtils {
     private final String uploadPath;
 
     /*
@@ -25,21 +24,26 @@ MyFileUtils {
         this.uploadPath = uploadPath;
     }
 
-    // path = "ddd/aaa"
+    // path = "ddd/aaa"                  /user/pk or feed/pk
     // D:/2024-02/download/greengram_ver1/ddd/aaa
     //디렉토리 생성
 
+ // 어떤구간에 파일을 이동시키고 싶어요
+    //폴더가 없으묜 에러가 터져서 그래서 미리 폴더를 만듦
     public String makeFolders(String path) {
         File file = new File(uploadPath, path);
+        //생성자 호출됨
+        //파라미터가 두개값이 들어간다? 두개를 합친다?
+        // 중간에 자동으로 /이게 들어간다 (uploadPath / path)
+        // 만들고 보면 확장자가 없음 즉 파일의 경로를 만들어줌
 
         if (!file.exists()){
             //       if (!file.exists()) 거짓일때 실
             file.mkdirs();// 존재한다면
-        }
+        }     // mkdir mkdirs 차이
         return file.getAbsolutePath();
         // getAbsolutePath() 절대주소를 가져온다는 의미인가?
     }
-
     //파일명에서 확장자 추출
     public String getExt(String fileName) {
         int lastIdx = fileName.lastIndexOf(".");
