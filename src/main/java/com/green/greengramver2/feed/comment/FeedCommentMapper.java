@@ -10,7 +10,7 @@ import java.util.List;
 
 @Mapper
 public interface FeedCommentMapper {
-    int insFeedComment(FeedCommentPostReq p);
-    List<FeedCommentDto> selFeedCommentList(FeedCommentGetReq p);
-    int delFeedComment(FeedCommentDelReq p);
+    int insFeedComment(FeedCommentPostReq p); // 댓글달기
+    List<FeedCommentDto> selFeedCommentList(FeedCommentGetReq p); //댓글조회
+    int delFeedComment(FeedCommentDelReq p); //댓글삭제
 }

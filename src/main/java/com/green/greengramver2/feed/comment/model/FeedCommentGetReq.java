@@ -1,19 +1,19 @@
 package com.green.greengramver2.feed.comment.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.green.greengramver2.common.model.Paging;
+import com.green.greengramver2.common.Constants;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
-import lombok.Setter;
 import org.springframework.web.bind.annotation.BindParam;
 
 import java.beans.ConstructorProperties;
 
+
 @Getter
-@Setter
+@Schema(title = "피드 댓글 리스트 요청")
 public class FeedCommentGetReq {
-    public final int DEFAULT_PAGE_SIZE = 20;
-    public final int   FIRST_COMMENT_SIZE = 3;
+    //public final int DEFAULT_PAGE_SIZE = 20; Constant 에서 값을 가져옴
+    private final int   FIRST_COMMENT_SIZE = 3;
     /*
      private 붙으면 게터세터 옶으면 아모고토 못함
      (다른 클래스에서 해당 멤버필드를 소환하거나 그  클래스에서 따로설정)
@@ -21,34 +21,23 @@ public class FeedCommentGetReq {
      final 이렇게 박제 해 놓은 건 한번 초기화한 이후 바뀔 수 없다
      */
 
-    @Schema(title = "피드 PK", example = "1", name = "feed_id"
+    @Schema(title = "피드 PK",description = "피드 PK",example = "1", name = "feed_id"
             ,requiredMode = Schema.RequiredMode.REQUIRED)
     private long feedId;
-    @Schema(title = "페이지", example = "1",
-            requiredMode = Schema.RequiredMode.REQUIRED)
-    private int page;
-    @JsonIgnore
+
+    @Schema(title = "튜플시작 index",description = "댓글, Element 갯수를 보내주면 된다",name = "startIndex"
+            , example = "3", requiredMode = Schema.RequiredMode.REQUIRED)
+    // private int page; 페이지는 필요없어짐
     private int sIdx;
-    @JsonIgnore
+
+    @Schema(title = "페이지당 아이템 수", description = "default = 20", example = "20")
     private int size;
 
 
-    public FeedCommentGetReq( @BindParam("feed_id") long feedId, int page) {
+    @ConstructorProperties({"feed_id","sIdx","size"})
+    public FeedCommentGetReq(long feedId, int sIdx, Integer size) {
         this.feedId = feedId;
-        setPage(page);
-    }
-
-    public void setPage(int page) {
-        this.page = page;
-        if (page < 1) {
-            return; //void 여서 0이나 음수값이면 아예 세팅 ㄴㄴ
-        }
-        if (page == 1) {
-            sIdx = 0;
-            size = FIRST_COMMENT_SIZE + 1; // +1은 isMore 처리
-            return;
-        }
-        sIdx = (page - 2) * DEFAULT_PAGE_SIZE + FIRST_COMMENT_SIZE;
-        size = DEFAULT_PAGE_SIZE + 1; // +1 은 즉 댓글 더 불러오기 역할 isMore
+        this.sIdx = sIdx;
+        this.size = (size == null ? Constants.getDefault_page_size():size)+1;
     }
 }

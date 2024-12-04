@@ -1,6 +1,7 @@
 package com.green.greengramver2.common.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.green.greengramver2.common.Constants;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.ToString;
@@ -14,9 +15,11 @@ public class Paging {
     private int size;
     @JsonIgnore
     private int sIdx;
+
+
     public Paging(Integer page, Integer size) {
         this.page = (page == null || page <= 0)? 1 : page;
-        this.size = (size == null || size <= 0)? 20: size;
+        this.size = (size == null || size <= 0)? Constants.getDefault_page_size() : size;
         this.sIdx = (this.page - 1) * this.size;
     }
 }
