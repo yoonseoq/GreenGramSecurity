@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.green.greengramver2.user.UserMapper">
+<mapper namespace="com.green.greengramver3.user.UserMapper">
     <insert id="insUser" useGeneratedKeys="true" keyProperty="userId"> <!--keyProperty="userId" 이거때문에 멤버필드 만듦-->
         insert into user
         set uid = #{uid},
