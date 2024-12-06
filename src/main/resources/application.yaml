@@ -3,18 +3,18 @@ const:
 
 
 file:
-  directory: D:/download/greengram_ver2
+  directory: D:/download/greengram_ver3
 
 mybatis:
   mapper-locations: mappers/**/*.xml
 
 spring:
   application:
-    name: GreenGramVer2
+    name: GreenGramVer3
 
   datasource:
     driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
-    url: jdbc:log4jdbc:mariadb://localhost/greengram_ver2
+    url: jdbc:log4jdbc:mariadb://localhost/greengram_ver3
     username: root
     password: green502
 

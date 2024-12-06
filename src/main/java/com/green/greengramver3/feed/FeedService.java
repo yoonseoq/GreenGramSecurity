@@ -23,7 +23,7 @@ public class FeedService {
     private final FeedMapper feedMapper;
     private final MyFileUtils myFileUtils;
     private final FeedCommentMapper feedCommentMapper;
-    private final FeedPicsMapper feedPicsMapper;
+    private final FeedPicMapper feedPicsMapper;
 
     @Transactional // 뭐지 알아보자
     public FeedPostRes postFeed(List<MultipartFile> pics, FeedPostReq p) {
@@ -67,7 +67,7 @@ public class FeedService {
         FeedPicDto dto = new FeedPicDto();
         dto.setFeedId(feedId); // 위에서 인서트 하면서 얻은 피드아이디
         dto.setPics(picNameList); // 거기에 있는 사진들 가져오기
-        int resultPics = feedPicsMapper.insFeedPics(dto); // 사진들도 따로 저장
+        int resultPics = feedPicsMapper.insFeedPicList(dto); // 사진들도 따로 저장
 
         /* FeedPostRes res = new FeedPostRes();
          res.setFeedId(feedId);
@@ -86,7 +86,7 @@ public class FeedService {
         List<FeedGetRes> list = feedMapper.selFeedList(p);
         for (FeedGetRes item : list) {
             // 피드당 사진 리스트
-            item.setPics(feedPicsMapper.selFeedPics(item.getFeedId()));
+            item.setPics(feedPicsMapper.selFeedPicList(item.getFeedId()));
         /*
             각 방에 있는 주소값을 얻어와서 작업 피드 4개있다는 가정하에
             피드당 사진리스트를 가져와서 그걸 사진마다 하나하나 가져온다.

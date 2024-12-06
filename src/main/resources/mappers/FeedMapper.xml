@@ -4,7 +4,7 @@
 <mapper namespace="com.green.greengramver3.feed.FeedMapper">
     <insert id="insFeed" useGeneratedKeys="true" keyProperty="feedId">
         insert into feed
-            set writer_user_id = #{userId},
+            set writer_user_id = #{writerUserId},
                 contents = #{contents},
                 location = #{location}
     </insert>
