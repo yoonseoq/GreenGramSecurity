@@ -4,12 +4,12 @@
 <mapper namespace="com.green.greengramver3.user.follow.UserFollowMapper">
     <insert id="insUserFollow" >
         insert into user_follow
-        set from_user_id = #{from_user_id},
-            to_user_id = #{to_user_id}
+        set from_user_id = #{fromUserId},
+            to_user_id = #{toUserId}
     </insert>
     <delete id="delUserFollow">
         delete from user_follow
-        where from_user_id = #{from_user_id}
-        and to_user_id = #{to_user_id}
+        where from_user_id = #{fromUserId}
+        and to_user_id = #{toUserId}
     </delete>
 </mapper>

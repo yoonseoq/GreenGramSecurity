@@ -21,7 +21,20 @@
         LEFT JOIN feed_like
         ON feed_like.feed_id=feed.feed_id
         AND feed_like.user_id=#{signedUserId}
+        <if test="profileUserId != null">
+            where writer_user_id = #{profileUserId}
+        </if>
         ORDER BY FEED.feed_id DESC
         LIMIT #{sIdx}, #{size}
     </select>
+    <!--
+
+    <delete id="delFeed">
+        delete from feed
+    </delete>
+
+        -->
+
+
+
 </mapper>

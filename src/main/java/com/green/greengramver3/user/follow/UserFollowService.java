@@ -12,6 +12,7 @@ public class UserFollowService {
     private final UserFollowMapper userFollowMapper;
 
     public int postUserFollow(UserFollowReq p){
+
         return userFollowMapper.insUserFollow(p);
     }
     public int delUserFollow(UserFollowReq p){
