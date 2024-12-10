@@ -1,6 +1,7 @@
 package com.green.greengramver3.feed;
 
 import com.green.greengramver3.feed.model.FeedPicDto;
+import com.green.greengramver3.feed.model.FeedPicSel;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -9,4 +10,5 @@ import java.util.List;
 public interface FeedPicMapper {
     int insFeedPicList(FeedPicDto p);
     List<String> selFeedPicList(long feedId);
+    List<FeedPicSel> selPicListByFeedIds(List<Long> feedIds);
 }

@@ -7,6 +7,7 @@ import com.green.greengramver3.feed.comment.model.FeedCommentGetReq;
 import com.green.greengramver3.feed.comment.model.FeedCommentGetRes;
 import com.green.greengramver3.feed.model.*;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,11 +15,15 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Slf4j
 @Service
+@ToString
 public class FeedService {
     private final FeedMapper feedMapper;
     private final MyFileUtils myFileUtils;
@@ -82,7 +87,19 @@ public class FeedService {
     }
 
     public List<FeedGetRes> getFeedList(FeedGetReq p) {
-        // N+1 이슈 발생
+        // N+1 이슈 발생 데이터 가져올 때 한번 더 실행하는것
+        // 리스트를처음 셀렉트 한걸로 데이터가 n개가 있는 것을 알고 그 n개를 끌고 오는 것
+        // 한번 들고오면 되는데 생각보다 더 많은
+        /*
+        피드 20개가 있어요 getFeedList 에서 총 20+1개? 왜 41번?
+        한번 셀렉트 하면 20 근데 셀렉트가 2개 있네 2*20 = 40 + 1
+
+
+
+
+         */
+
+
         List<FeedGetRes> list = feedMapper.selFeedList(p);
         for (FeedGetRes item : list) {
             // 피드당 사진 리스트
@@ -124,7 +141,51 @@ public class FeedService {
             item.setComment(commentGetRes);
         }
         return list;
+        //select 2번
 
+
+    }
+
+    //select 3번 피드 5000개, 페이지당 20개씩 가져온다
+    public List<FeedGetRes> getFeedList3(FeedGetReq p) {
+        //피드 리스트
+        List<FeedGetRes> list = feedMapper.selFeedList(p);
+
+        //피드와 관련된 사진 리스트
+        // feed_id를 골라내야 한다 아이디만 뽑아내고 싶다
+
+        List<Long> feedIds = list.stream().map(FeedGetRes::getFeedId).collect(Collectors.toList());
+        List<Long> feedIds2 = list.stream().map(FeedGetRes::getFeedId).toList();
+        // 매핑해서 똑같은 크기의 맵이 나온다
+
+
+        List<Long> feedIdList = new ArrayList<>(list.size());
+
+        for (FeedGetRes item : list) {
+            feedIdList.add(item.getFeedId());
+        }
+        log.info("feedIdList:{}", feedIdList);
+
+        List<FeedPicSel> feedPicList = feedPicsMapper.selPicListByFeedIds(feedIds);
+        log.info("feedPicList:{}", feedPicList);
+
+        Map<Long, List<String>> picHashMap = new HashMap<>();
+        for (FeedPicSel item : feedPicList) {
+            long feedId = item.getFeedId();
+            if(!picHashMap.containsKey(feedId)){
+                picHashMap.put(feedId, new ArrayList<>(2));
+            }// 그아이디로 리스트 만듦
+            List<String> pics = picHashMap.get(feedId); // 있으면 그 피드아이디로 사진 담아줌
+            pics.add(item.getPic());
+        }
+        for (FeedGetRes res : list) {
+            res.setPics(picHashMap.get(res.getFeedId()));
+        }
+
+
+        //피드와 관련된 사진 리스트
+        log.info("list:{}", list);
+        return list;
     }
 
 

@@ -12,5 +12,6 @@ public class FeedCommentDto {
     private long writerUserId;
     private String writerNm;
     private String writerPic;
+    private long feedId;
 
 }
