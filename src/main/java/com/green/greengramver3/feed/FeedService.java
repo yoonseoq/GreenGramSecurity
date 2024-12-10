@@ -45,9 +45,7 @@ public class FeedService {
         List<String> picNameList = new ArrayList<>(pics.size());
 
 
-        for (String pic : picNameList) { //리스트에 있는거 하나하나 전수조사해서 for 문 돌림
-            log.info("pic 사진 :{}", pic);
-        }
+
         /*
         pics.size()리턴메소드 쓰면 내부처리가 달라진다.
         안쪽애는 배열로 처리가 됨
