@@ -38,10 +38,24 @@ public class FeedController {
     @Operation(summary = "FeedList",description = "loginUserId는 로그인한 사용자의 PK")
     public ResultResponse<List<FeedGetRes>> getFeedList(@ParameterObject @ModelAttribute FeedGetReq p) {
        log.info("FeedController > getFeedList > p : {}",p);
-        List<FeedGetRes> list = service.getFeedList(p);
+        List<FeedGetRes> list = service.getFeedList3(p);
         return ResultResponse.<List<FeedGetRes>>builder()
                 .resultMessage(String.format("%d rows",list.size()))
                 .resultData(list)
                 .build();
-    }
+    } // n+1이슈가 발생할수 있음
+
+    // 3번 셀렉트하고 피드 5000개 페이지당 20개씩 가져온다
+    /*public List<FeedGetRes> getFeedList2(FeedGetReq p) {
+
+        List<FeedGetRes> list = service.getFeedList(p); //피드 리스트
+
+        List<Long> feedIds = new ArrayList<>();
+        //list 에 있는 사이즈만큼  Long 타입의 feedIds 리스트 생성
+        for (FeedGetRes item : list) {
+            feedIds.add(item.getFeedId());
+        }
+        log.info("feedIds : {}", feedIds);
+
+    }*/
 }

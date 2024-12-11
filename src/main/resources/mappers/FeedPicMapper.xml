@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.green.greengramver3.feed.FeedPicMapper">
-    <insert id="insFeedPicList">
+    <insert id="insFeedPic">
         insert into feed_pic
         (feed_id, pic)
         values
@@ -17,7 +17,7 @@
         from feed_pic
         where feed_id = #{feedId}
     </select>
-    <select id="selFeedPicListByFeedIds">
+    <select id="selPicListByFeedIds">
         select feed_id as feedId
         , pic
         from feed_pic
