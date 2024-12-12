@@ -34,6 +34,23 @@
     </delete>
 
         -->
+    <delete id="delFeedLikeAndFeedCommentAndFeedPic">
+        delete
+        from feed a
+        left join feed_like b
+        on a.feed_id = b.feed_id
+        left join feed_comment c
+        on a.feed_id = c.feed_id
+        left join feed_pic d
+        on a.feed_id = d.feed_id
+        where a.feed_id = #{feedId}
+        and a.writer_user_id = #{signedUserId}
+    </delete>
+    <delete id="delFeed">
+        delete from feed
+        where feed_id = #{feedId}
+        and writer_user_id = #{signedUserId}
+    </delete>
 
 
 

@@ -158,7 +158,7 @@ public class FeedService {
             res.setPics(picHashMap.get(res.getFeedId()));
             FeedCommentGetRes feedCommentGetRes = commentHashMap.get(res.getFeedId());
 
-            if (feedCommentGetRes != null) {
+            if (feedCommentGetRes == null) {
                 feedCommentGetRes = new FeedCommentGetRes();
                 feedCommentGetRes.setCommentList(new ArrayList<>());
             } else if (feedCommentGetRes.getCommentList().size() == 4) {
@@ -170,6 +170,21 @@ public class FeedService {
         log.info("list: {}", list);
         return list;
 
+    }
+    @Transactional
+    public int deleteFeed(FeedDeleteReq p) {
+        //피드 댓 좋야요 사진 삭제
+        int affectedRowsEtc = feedMapper.delFeedLikeAndFeedCommentAndFeedPic(p);
+        log.info("deleteFeed > affectedRows: {}", affectedRowsEtc);
+
+        int affectedRowsFeed = feedMapper.delFeed(p);
+        log.info("deleteFeed > affectedRowsFeed: {}", affectedRowsFeed);
+
+         String deletePath = String.format("%s/feed/%d",myFileUtils.getUploadPath(), p.getFeedId());
+         myFileUtils.deleteFolder(deletePath, true);
+
+
+         return 1;
     }
 }
 
