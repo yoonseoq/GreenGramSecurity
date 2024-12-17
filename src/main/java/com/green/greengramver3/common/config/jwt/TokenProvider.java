@@ -20,15 +20,15 @@ import java.util.Date;
 
 @Service
 public class TokenProvider {
-    private final JwtProperties jwtProperties;
     private final ObjectMapper objectMapper;
+    private final JwtProperties jwtProperties;
     private final SecretKey secretKey;
 
     public TokenProvider(JwtProperties jwtProperties, ObjectMapper objectMapper) {
         // di 주입하기
 
-        this.jwtProperties = jwtProperties;
         this.objectMapper = objectMapper;
+        this.jwtProperties = jwtProperties;
         this.secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtProperties.getSecretKey()));
     }
 
@@ -40,8 +40,13 @@ public class TokenProvider {
     private String makeToken(JwtUser jwtUser, Date expiry) {
 
         return Jwts.builder().header().add("typ","JWT").add("alg","HS256")
-                .and().issuer(jwtProperties.getIssuer()).issuedAt(new Date()).expiration(expiry)
-                .signWith(SignatureAlgorithm.HS256, jwtProperties.getSecretKey()).compact();
+                .and()
+                .issuer(jwtProperties.getIssuer())
+                .issuedAt(new Date())
+                .expiration(expiry)
+                .claim("signedUser",makeClaimByUserToString(jwtUser))
+                .signWith(secretKey)
+                .compact();
     }
 
     private Object makeClaimByUserToString(JwtUser jwtUser) {
@@ -72,7 +77,12 @@ public class TokenProvider {
     public UserDetails getUserDetails(String token) {
         Claims claims = getClaims(token);
         String json = (String) claims.get("signedUser");
-        JwtUser jwtUser = objectMapper.convertValue(json, JwtUser.class);
+        JwtUser jwtUser = null;
+        try {
+            jwtUser = objectMapper.readValue(json, JwtUser.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
         MyUserDetails userDetails = new MyUserDetails();
         userDetails.setJwtUser(jwtUser);
 

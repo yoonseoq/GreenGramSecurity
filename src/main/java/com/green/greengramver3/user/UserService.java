@@ -38,12 +38,14 @@ public class UserService {
         String middlePath = String.format("user/%d", userId);
         myFileUtils.makeFolders(middlePath);
         String filePath = String.format("%s/%s", middlePath,savedPicName);
-        try {
+
             // 멀티파트파일에 있는 데이터를 저기로 넘겨줌 그러면서 에러도 거기서 던짐
+        try {
             myFileUtils.transferTo(pic,filePath);
-        }catch (IOException e){
-            e.printStackTrace();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
+
 
         return result;
     }
