@@ -1,4 +1,4 @@
-package com.green.greengramver3.common.config.jwt;
+package com.green.greengram.common.config.jwt;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

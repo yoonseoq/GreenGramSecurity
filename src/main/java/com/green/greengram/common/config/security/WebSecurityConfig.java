@@ -1,16 +1,15 @@
-package com.green.greengramver3.common.config.security;
+package com.green.greengram.common.config.security;
 // Spring Security 세팅
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
-import static org.springframework.boot.autoconfigure.security.servlet.PathRequest.toH2Console;
 
 @Configuration // 메소드 빈등록이 있어야 의미가 있다. 메소드 빈등록이 싱글톤이 됨
 @RequiredArgsConstructor
@@ -21,10 +20,21 @@ public class WebSecurityConfig {
                 .httpBasic(h->h.disable()) //ssr이 아니다. 화면을 만들지 않을거기 때문에 비활성화 시킨다. 시큐리티 로그인창 나타나지 않을 것이다.
                 .formLogin(form -> form.disable())//폼로그인 기능 자체를 비활성화
                 .csrf(csrf -> csrf.disable()) //ssr이 아니다. 보안관련
-                .authorizeHttpRequests(req ->req.requestMatchers("/api/feed","/api/feed/ver3","/api/").authenticated()
-                        .anyRequest().permitAll() //나머지 요청은 모두 허용
+                .authorizeHttpRequests(req ->
+
+                        req.requestMatchers("/api/feed","/api/feed/**").authenticated()
+                         //나머지 요청은 모두 허용                                                          피드밑에 모든것은 다 로그인 되어야 한다
+                            .requestMatchers(HttpMethod.GET,"api/user").authenticated()
+                            .requestMatchers(HttpMethod.PATCH,"api/user/pic").authenticated()
+                            .anyRequest().permitAll() //나머지 요청은 모두 허용                                                          피드밑에 모든것은 다 로그인 되어야 한다
+
                 )
                 .build();
+    }
+
+    @Bean
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 }
                 /* 람다식은 뭐하는 애임? 메소드를 하나의 식으로 표현하는것

@@ -1,18 +1,18 @@
-package com.green.greengram.config.security;
+package com.green.greengram.common.config.security;
 
-import com.green.greengram.config.jwt.JwtUser;
+import com.green.greengram.common.config.jwt.JwtUser;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.Authentication;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-@Getter
+
 @Setter
+@Getter
 public class MyUserDetails implements UserDetails {
     private JwtUser jwtUser;
 
@@ -29,7 +29,6 @@ public class MyUserDetails implements UserDetails {
     public String getPassword() {
         return "";
     }
-
     @Override
     public String getUsername() {
         return "";

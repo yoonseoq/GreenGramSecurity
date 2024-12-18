@@ -1,5 +1,7 @@
-package com.green.greengramver3.common.config.jwt;
+package com.green.greengram.common.config.jwt;
 
+import com.green.greengram.common.config.jwt.JwtUser;
+import com.green.greengram.common.config.jwt.TokenProvider;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

@@ -1,14 +1,22 @@
 package com.green.greengram.user;
 
+import com.green.greengram.common.CookieUtils;
 import com.green.greengram.common.MyFileUtils;
+import com.green.greengram.common.config.jwt.JwtUser;
+import com.green.greengram.common.config.jwt.TokenProvider;
 import com.green.greengram.user.model.*;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.mindrot.jbcrypt.BCrypt;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.Duration;
+import java.util.ArrayList;
 
 @RequiredArgsConstructor
 @Service
@@ -16,12 +24,16 @@ import java.io.IOException;
 public class UserService {
     private final UserMapper mapper;
     private final MyFileUtils myFileUtils;
+    private final PasswordEncoder passwordEncoder;
+    private final TokenProvider tokenProvider;
+    private final CookieUtils cookieUtils;
 
 
     public int postSignUp( UserSignUpReq p, MultipartFile pic) {
         String savedPicName = (pic != null? myFileUtils.makeRandomFileName(pic):null);
         // 비밀번호 암호화
-        String hashedPassword = BCrypt.hashpw(p.getUpw(), BCrypt.gensalt());
+        //String hashedPassword = BCrypt.hashpw(p.getUpw(), BCrypt.gensalt());
+        String hashedPassword = passwordEncoder.encode(p.getUpw());
         log.info("hashedPassword: {} ", hashedPassword);
         p.setUpw(hashedPassword);
         p.setPic(savedPicName);
@@ -42,13 +54,12 @@ public class UserService {
         try {
             myFileUtils.transferTo(pic,filePath);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+           e.printStackTrace();
         }
-
-
         return result;
     }
-    public UserSignInRes selUserList(UserSignInReq p) {
+
+    public UserSignInRes selUserList(UserSignInReq p, HttpServletResponse response) {
 
 
         UserSignInRes res = mapper.selUserByUid(p.getUid());
@@ -57,21 +68,51 @@ public class UserService {
             res = new UserSignInRes(); // 메세지 보낼려고 객체 생성
             res.setMessage("아이디 확인 바람");
             return res;
-        }
+        // else if ( !BCrypt.checkpw(p.getUpw(), res.getUpw())) { //비밀번호가 다를시
+        } else if ( !passwordEncoder.matches(p.getUpw(), res.getUpw())) {
 
-        if ( !BCrypt.checkpw(p.getUpw(), res.getUpw())) {
             res = new UserSignInRes();
             res.setMessage("비번 확인 요망!");
             return res;
+
         }
+        /*
+         한별씨 이제 뭐해야하죠? -> 잘 모르겠습니다. 로그인시켜줘야죠
+         인증처리 jwt 해줘야 한다
+         은아: jwt 토큰생성 1개? 2개? 왜 두개죠???
+            accessToken, refreshToken 두개만들어야함
+         */
+
+        JwtUser jwtUser = new JwtUser();
+        jwtUser.setSignedUserId(res.getUserId());
+        jwtUser.setRoles(new ArrayList<>(2));
+
+        jwtUser.getRoles().add("ROLE_USER");
+        jwtUser.getRoles().add("ROLE_ADMIN");
+
+        String accessToken = tokenProvider.generateToken(jwtUser, Duration.ofMinutes(20));;
+        String refreshToken = tokenProvider.generateToken(jwtUser, Duration.ofDays(15));
+
+        int maxAge = 1_296_000;
+        cookieUtils.setCookie(response,"refreshToken",refreshToken,maxAge);
+
 
         res.setMessage("로그인 성공!!");
+        res.setAccessToken(accessToken);
         return res;
     }
 
     public UserInfoGetRes GetUserInfo(UserInfoGetReq p) {
         return mapper.selUserInfo(p);
     }
+
+    public String getAccessToken(HttpServletRequest req) {
+        Cookie cookie = cookieUtils.getCookie(req,"refreshToken");
+        String refreshToken = cookie.getValue();
+        return refreshToken;
+    }
+
+
 
     public String patchUserPic(UserPicPatchReq p) {
        /*

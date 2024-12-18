@@ -1,17 +1,17 @@
-package com.green.greengram.config.jwt;
+package com.green.greengram.common.config.jwt;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.green.greengram.config.security.MyUserDetails;
+
+import com.green.greengram.common.config.security.MyUserDetails;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +19,7 @@ import javax.crypto.SecretKey;
 import java.time.Duration;
 import java.util.*;
 
-@Service // 빈등록을 했기 때문에 빈
+@Service // 빈등록을 했기 때문에 빈, 그리고 생성자도 따로 만들어짐
 public class TokenProvider {
     private final ObjectMapper objectMapper; //jackson 라이브러리
     private final JwtProperties jwtProperties;
@@ -48,19 +48,25 @@ public class TokenProvider {
         // 객체 자체를 JWT 에 담고 싶어서 객체를 직렬화
         // JwtUser 에 담고있는 데이터를 JSON 형태의 문자열로 변환
         // jwt 암호화
+        JwtBuilder builder = Jwts.builder();
+        JwtBuilder.BuilderHeader header = builder.header();
+        header.type("JWT");
+
+        builder.issuer(jwtProperties.getIssuer());
+
         return Jwts.builder()
-                .header().add("typ", "JWT")
-                .add("alg", "HS256")
+                .header().type("JWT")
                 .and()
                 .issuer(jwtProperties.getIssuer())
                 .issuedAt(new Date())
                 .expiration(expiry)
                 .claim("signedUser", makeClaimByUserToString(jwtUser))
-                .signWith(SignatureAlgorithm.ES256, jwtProperties.getSecretKey())
+                .signWith(secretKey)
                 .compact();
     }
+    //유일하게 객체가 들어갈수 있는 부분을 스트링밖에 없다
 
-    private Object makeClaimByUserToString(JwtUser jwtUser) {
+    private String makeClaimByUserToString(JwtUser jwtUser) {
         try {
             return objectMapper.writeValueAsString(jwtUser);
         } catch (JsonProcessingException e) {
@@ -68,18 +74,21 @@ public class TokenProvider {
         }
     }
 
-    public boolean validateToken(String token) {
+    public boolean validToken(String token) {
 
+        //jwt 복호화
         try {
             getClaims(token);
-            return true;
+
         } catch (Exception e) {
             return false;
         }
+            return true;
     }
 
+    // spring security 에서 인증처리를 해줘야 한다. 그때 authentication 객체가 필요
     public Authentication getAuthentication(String token) {
-        UserDetails userDetails = getUserDetails(token);
+        UserDetails userDetails = getUserDetailsFromToken(token);
 
         /*
             Set<SimpleGrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority("ROLE_USER));
@@ -92,18 +101,20 @@ public class TokenProvider {
                 ? null
                 : new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 //옛날에 아이디 비번으로 인증처리 할때 쓰던거
-
-
-
-
     }
-    public UserDetails getUserDetails(String token) {
+
+    public UserDetails getUserDetailsFromToken(String token) {
         Claims claims = getClaims(token);
         String json = (String) claims.get("signedUser");
-        JwtUser jwtUser = objectMapper.convertValue(json, JwtUser.class);
+        JwtUser jwtUser = null;
+        try {
+         jwtUser = objectMapper.readValue(json, JwtUser.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+
         MyUserDetails userDetails = new MyUserDetails();
         userDetails.setJwtUser(jwtUser);
-
         return userDetails;
     }
 

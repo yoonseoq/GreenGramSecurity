@@ -32,7 +32,6 @@ dependencies {
     // https://mvnrepository.com/artifact/org.bgee.log4jdbc-log4j2/log4jdbc-log4j2-jdbc4.1
     implementation 'org.bgee.log4jdbc-log4j2:log4jdbc-log4j2-jdbc4.1:1.16'
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0' // swagger
-    implementation 'org.mindrot:jbcrypt:0.4'// 추가
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
 
