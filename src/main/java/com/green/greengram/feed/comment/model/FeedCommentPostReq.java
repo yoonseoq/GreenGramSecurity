@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter
 @Schema(title = "피드 댓글 등록 요청")
 public class FeedCommentPostReq {
-    @Schema(title = "유저 PK", example = "1",requiredMode = Schema.RequiredMode.REQUIRED)
+    @JsonIgnore
     private long userId;
     @Schema(title = "피드 PK", example = "1",requiredMode = Schema.RequiredMode.REQUIRED)
     private long feedId;

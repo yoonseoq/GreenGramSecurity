@@ -4,6 +4,7 @@ import com.green.greengram.common.CookieUtils;
 import com.green.greengram.common.MyFileUtils;
 import com.green.greengram.common.config.jwt.JwtUser;
 import com.green.greengram.common.config.jwt.TokenProvider;
+import com.green.greengram.common.config.security.AuthenticationFacade;
 import com.green.greengram.user.model.*;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,9 +28,11 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
     private final CookieUtils cookieUtils;
+    private final AuthenticationFacade authenticationFacade;
 
 
     public int postSignUp( UserSignUpReq p, MultipartFile pic) {
+        p.setUserId(authenticationFacade.getSignedUserId());
         String savedPicName = (pic != null? myFileUtils.makeRandomFileName(pic):null);
         // 비밀번호 암호화
         //String hashedPassword = BCrypt.hashpw(p.getUpw(), BCrypt.gensalt());
@@ -90,7 +93,7 @@ public class UserService {
         jwtUser.getRoles().add("ROLE_USER");
         jwtUser.getRoles().add("ROLE_ADMIN");
 
-        String accessToken = tokenProvider.generateToken(jwtUser, Duration.ofMinutes(20));;
+        String accessToken = tokenProvider.generateToken(jwtUser, Duration.ofMinutes(1));;
         String refreshToken = tokenProvider.generateToken(jwtUser, Duration.ofDays(15));
 
         int maxAge = 1_296_000;
@@ -103,19 +106,25 @@ public class UserService {
     }
 
     public UserInfoGetRes GetUserInfo(UserInfoGetReq p) {
+        p.setSignedUserId(authenticationFacade.getSignedUserId());
         return mapper.selUserInfo(p);
     }
 
     public String getAccessToken(HttpServletRequest req) {
         Cookie cookie = cookieUtils.getCookie(req,"refreshToken");
         String refreshToken = cookie.getValue();
-        return refreshToken;
+        log.info("refreshToken: {}", refreshToken);
+
+        JwtUser jwtUser = tokenProvider.getJwtUser(refreshToken);
+        String accessToken = tokenProvider.generateToken(jwtUser, Duration.ofMinutes(1));
+        return accessToken;
     }
 
 
 
     public String patchUserPic(UserPicPatchReq p) {
-       /*
+       p.setSignedUserId(authenticationFacade.getSignedUserId());
+        /*
         이미지 파일 처리해야해서 myFileUtils 를 사용해서
         해당파일명에서 파일을 가져오고 지우고 새로운사진을 가져옴
         transferTo

@@ -103,16 +103,20 @@ public class TokenProvider {
                 //옛날에 아이디 비번으로 인증처리 할때 쓰던거
     }
 
-    public UserDetails getUserDetailsFromToken(String token) {
+    public JwtUser getJwtUser(String token) {
         Claims claims = getClaims(token);
         String json = (String) claims.get("signedUser");
         JwtUser jwtUser = null;
         try {
-         jwtUser = objectMapper.readValue(json, JwtUser.class);
-        } catch (JsonProcessingException e) {
+            jwtUser = objectMapper.readValue(json,JwtUser.class);
+        }catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
+        return jwtUser;
+    }
 
+    public UserDetails getUserDetailsFromToken(String token) {
+        JwtUser jwtUser = getJwtUser(token);
         MyUserDetails userDetails = new MyUserDetails();
         userDetails.setJwtUser(jwtUser);
         return userDetails;

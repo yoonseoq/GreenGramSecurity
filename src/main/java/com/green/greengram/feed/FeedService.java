@@ -1,6 +1,7 @@
 package com.green.greengram.feed;
 
 import com.green.greengram.common.MyFileUtils;
+import com.green.greengram.common.config.security.AuthenticationFacade;
 import com.green.greengram.feed.comment.FeedCommentMapper;
 import com.green.greengram.feed.comment.model.FeedCommentDto;
 import com.green.greengram.feed.comment.model.FeedCommentGetReq;
@@ -27,9 +28,11 @@ public class FeedService {
     private final FeedPicMapper feedPicMapper;
     private final FeedCommentMapper feedCommentMapper;
     private final MyFileUtils myFileUtils;
+    private final AuthenticationFacade authenticationFacade;
 
     @Transactional //여러개의 작업이 수행될때 데이터의 일관성을 보장하기 위해 사용됨
     public FeedPostRes postFeed(List<MultipartFile> pics, FeedPostReq p) {
+        p.setWriterUserId(authenticationFacade.getSignedUserId());
         int result = feedMapper.insFeed(p); // 피드정보 가져옴
 
         long feedId = p.getFeedId(); // 피드아이디 가져와서 변수 만들기
@@ -82,7 +85,7 @@ public class FeedService {
     }
 
     public List<FeedGetRes> getFeedList(FeedGetReq p) {
-
+        p.setSignedUserId(authenticationFacade.getSignedUserId());
         List<FeedGetRes> list = feedMapper.selFeedList(p);
         for (FeedGetRes item : list) {
 
@@ -107,6 +110,7 @@ public class FeedService {
     }
 
     public List<FeedGetRes> getFeedList3(FeedGetReq p) {
+        p.setSignedUserId(authenticationFacade.getSignedUserId());
         //피드 리스트
         List<FeedGetRes> list = feedMapper.selFeedList(p);
 
@@ -173,6 +177,7 @@ public class FeedService {
     }
     @Transactional
     public int deleteFeed(FeedDeleteReq p) {
+        p.setSignedUserId(authenticationFacade.getSignedUserId());
         //피드 댓 좋야요 사진 삭제
         int affectedRowsEtc = feedMapper.delFeedLikeAndFeedCommentAndFeedPic(p);
         log.info("deleteFeed > affectedRows: {}", affectedRowsEtc);

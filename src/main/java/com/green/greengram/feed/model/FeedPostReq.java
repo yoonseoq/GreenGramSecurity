@@ -10,7 +10,7 @@ import lombok.Setter;
 public class FeedPostReq {
     @JsonIgnore
     private long feedId;
-    @Schema(title = "로그인 유저 PK",example = "1",requiredMode = Schema.RequiredMode.REQUIRED)
+    @JsonIgnore // 토큰에 데이터가 들어가있어서 굳이
     private long  writerUserId;
     @Schema(title = "피드내용",example = "피드내용 테스트")
     private String contents;
