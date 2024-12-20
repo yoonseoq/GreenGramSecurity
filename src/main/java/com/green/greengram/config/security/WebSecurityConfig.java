@@ -1,7 +1,7 @@
-package com.green.greengram.common.config.security;
+package com.green.greengram.config.security;
 // Spring Security 세팅
 
-import com.green.greengram.common.config.jwt.TokenAuthenticationFilter;
+import com.green.greengram.config.jwt.TokenAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,7 +18,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class WebSecurityConfig {
 
     private final TokenAuthenticationFilter tokenAuthenticationFilter;
-
+ // 필더를 만들고 스프링 필터에 추가
 
     @Bean // 스프링이 메소드 호출을 하고 리턴한 객체의 주소값을 관리한다(빈등록)
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -36,6 +36,8 @@ public class WebSecurityConfig {
 
                 )
                 .addFilterBefore(tokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                                        // 이 필터를 거치고  이 필터가 나옴
+                //tokenAuthenticationFilter 는 무슨일? 요청이 들어올때 마다
                 .build();
     }
 

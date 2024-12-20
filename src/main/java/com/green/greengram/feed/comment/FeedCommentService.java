@@ -1,6 +1,6 @@
 package com.green.greengram.feed.comment;
 
-import com.green.greengram.common.config.security.AuthenticationFacade;
+import com.green.greengram.config.security.AuthenticationFacade;
 import com.green.greengram.feed.comment.model.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

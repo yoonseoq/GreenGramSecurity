@@ -1,4 +1,4 @@
-package com.green.greengram.common.config.jwt;
+package com.green.greengram.config.jwt;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -23,18 +23,18 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         @Override
         protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
             log.info("ip address: {}", request.getRemoteAddr());
-            String authorizationHeader = request.getHeader(HEADER_AUTHORIZATION);
+            String authorizationHeader = request.getHeader(HEADER_AUTHORIZATION); //Bearer 토큰값
             log.info("AuthorizationHeader: {}", authorizationHeader);
             // 토근값만 얻가우ㅣ해서 substring 사용
 
             String token = getAccessToken(authorizationHeader);
             log.info(" token: {}", token);
 
-            if (tokenProvider.validToken(token)) {
-                Authentication auth = tokenProvider.getAuthentication(token);
-                SecurityContextHolder.getContext().setAuthentication(auth);
-            }
-            filterChain.doFilter(request, response);
+            if (tokenProvider.validToken(token)) { //문제 없으면 트루
+                Authentication auth = tokenProvider.getAuthentication(token); // 로그인한것을 앎
+                SecurityContextHolder.getContext().setAuthentication(auth); // 시큐리티에
+            }// 이거 처리 해주고 그 다음 필터로 전달
+            filterChain.doFilter(request, response); // 리퀘스트가 다음필터의 리쿼스트로, 레스폰스도 다음필터의 레스폰스로 넘어감
         }
 
     private String getAccessToken(String authorizationHeader) {

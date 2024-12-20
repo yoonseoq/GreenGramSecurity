@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.security.SecurityScheme;
         ,security = @SecurityRequirement(name = "Authorization")
 )
 
+// 스웨거에서 인증처리 할수 있게끔 처리함
 @SecurityScheme(
         type = SecuritySchemeType.HTTP
         , name = "Authorization"

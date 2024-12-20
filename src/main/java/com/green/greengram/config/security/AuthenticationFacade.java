@@ -1,6 +1,6 @@
-package com.green.greengram.common.config.security;
+package com.green.greengram.config.security;
 
-import com.green.greengram.common.config.jwt.JwtUser;
+import com.green.greengram.config.jwt.JwtUser;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 

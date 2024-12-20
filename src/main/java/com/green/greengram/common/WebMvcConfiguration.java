@@ -2,11 +2,17 @@ package com.green.greengram.common;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.method.HandlerTypePredicate;
 import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.resource.PathResourceResolver;
+
+import java.io.IOException;
+
 //빈등록 되어있는 애들은 component 상속됨
 //@Bean 을 메소드위에 놓으면
 @Configuration
@@ -32,6 +38,23 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
                 .addResourceLocations("file:" + uploadPath + "/");
         // 실제 파일 시스템에서 리소스가 위치한 경로를 지정한다.
         // uploadPath 는 와부설정 하일에서 file,directory 값으로 주입받은 경로이다
+    //새로고침시 화면이 나타날 수 있도록 세팅
+
+        registry.addResourceHandler("/**")
+                .addResourceLocations("classpath:/static/**")
+                .resourceChain(true)
+                .addResolver(new PathResourceResolver(){
+                    //중괄호 넣은 순간 익명클래스
+                    @Override
+                    protected Resource getResource(String resourcePath, Resource location) throws IOException {
+                        Resource resource = location.createRelative(resourcePath);
+
+                        if (resource.exists() && resource.isReadable()) { // 존재하고 읽을 수 있으면
+                            return resource;
+                        }
+                        return new ClassPathResource("/static/index.html");
+                    }
+                });
     }
 
     @Override
@@ -40,4 +63,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
         configurer.addPathPrefix("api", HandlerTypePredicate.forAnnotation(RestController.class));
         // 자동으로 api붙음
     }
+
+
+
 }

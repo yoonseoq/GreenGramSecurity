@@ -1,4 +1,4 @@
-package com.green.greengram.common.config.jwt;
+package com.green.greengram.config.jwt;
 
 import lombok.Getter;
 import lombok.Setter;

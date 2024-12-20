@@ -2,9 +2,9 @@ package com.green.greengram.user;
 
 import com.green.greengram.common.CookieUtils;
 import com.green.greengram.common.MyFileUtils;
-import com.green.greengram.common.config.jwt.JwtUser;
-import com.green.greengram.common.config.jwt.TokenProvider;
-import com.green.greengram.common.config.security.AuthenticationFacade;
+import com.green.greengram.config.jwt.JwtUser;
+import com.green.greengram.config.jwt.TokenProvider;
+import com.green.greengram.config.security.AuthenticationFacade;
 import com.green.greengram.user.model.*;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -112,12 +112,14 @@ public class UserService {
 
     public String getAccessToken(HttpServletRequest req) {
         Cookie cookie = cookieUtils.getCookie(req,"refreshToken");
+        // 로그아웃된 리프레시 토큰은 훔친것
         String refreshToken = cookie.getValue();
         log.info("refreshToken: {}", refreshToken);
 
         JwtUser jwtUser = tokenProvider.getJwtUser(refreshToken);
-        String accessToken = tokenProvider.generateToken(jwtUser, Duration.ofMinutes(1));
-        return accessToken;
+        return tokenProvider.generateToken(jwtUser, Duration.ofMinutes(100));
+        // 바디에 토큰 받아서 보내는것은 별로
+        // 인증할때 security 프레임 워크 사용
     }
 
 
@@ -132,7 +134,7 @@ public class UserService {
        랜덤한 파일명 만들고
 
         */
-        //1.저장할 파일명 생성
+        //1.저장할 파일명 생성 . 이때 확장자는 오리지날 파일명과 일치함
         String savedPicName = (p.getPic() != null? myFileUtils.makeRandomFileName(p.getPic()):null);
 
         /*

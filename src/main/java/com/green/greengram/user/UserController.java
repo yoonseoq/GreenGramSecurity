@@ -26,7 +26,8 @@ public class UserController {
         UserSignInRes res = service.selUserList(p, response);
         return ResultResponse.<UserSignInRes>builder()
                 .resultMessage(res.getMessage())
-                .resultData(res).build();
+                .resultData(res)
+                .build();
     }
 
     @GetMapping
@@ -36,10 +37,19 @@ public class UserController {
         return ResultResponse.<UserInfoGetRes>builder().resultMessage("유저프로필").resultData(res).build();
     }
 
-    @GetMapping("access-token")
+    @GetMapping("access-token") // 똑같은 메소드에 똑같은 주소값은 안됨
     @Operation(summary = "accessToken 재발행")
     public ResultResponse<String> getAccessToken(HttpServletRequest req) {
-        String accessToken = service.getAccessToken(req);
+        // 여기 적어 넣으면 스프링이 실제로 넣어줌
+        /*
+        servlet은 뭐하는 놈인가  req가 들어오면 서블릿이 온다. 이 친구기
+        컨트롤러 앞단에 있음. 누굴 호출해줄까?
+
+
+
+        아까 오더 포스트 안된 이유. 계속 orderId가 not found여서
+         */
+        String accessToken = service.getAccessToken(req); //요청받아서 accesstoken에 주소값 보내줌
         return ResultResponse.<String>builder()
                 .resultMessage("AccessToken 재발행")
                 .resultData(accessToken)

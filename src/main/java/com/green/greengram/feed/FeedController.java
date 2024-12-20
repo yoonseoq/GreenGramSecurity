@@ -3,6 +3,7 @@ package com.green.greengram.feed;
 import com.green.greengram.common.model.ResultResponse;
 import com.green.greengram.feed.model.*;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.annotations.ParameterObject;
@@ -22,7 +23,7 @@ public class FeedController {
 
     @PostMapping
     public ResultResponse<FeedPostRes> postFeed(@RequestPart List<MultipartFile> pics,
-                                                @RequestPart FeedPostReq p) {
+                                                @Valid @RequestPart FeedPostReq p) {
         log.info("FeedController > getFeedList > p : {}",p); // 이거 로그 일단 무권 짝어야함
         FeedPostRes res = service.postFeed(pics, p);
         List<FeedGetRes> list = new ArrayList<>();
@@ -33,7 +34,7 @@ public class FeedController {
     }
     @GetMapping
     @Operation(summary = "FeedList",description = "loginUserId는 로그인한 사용자의 PK")
-    public ResultResponse<List<FeedGetRes>> getFeedList(@ParameterObject @ModelAttribute FeedGetReq p) {
+    public ResultResponse<List<FeedGetRes>> getFeedList(@Valid @ParameterObject @ModelAttribute FeedGetReq p) {
        log.info("FeedController > getFeedList > p : {}",p);
         List<FeedGetRes> list = service.getFeedList3(p);
         return ResultResponse.<List<FeedGetRes>>builder()

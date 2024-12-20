@@ -1,7 +1,7 @@
 package com.green.greengram.feed;
 
 import com.green.greengram.common.MyFileUtils;
-import com.green.greengram.common.config.security.AuthenticationFacade;
+import com.green.greengram.config.security.AuthenticationFacade;
 import com.green.greengram.feed.comment.FeedCommentMapper;
 import com.green.greengram.feed.comment.model.FeedCommentDto;
 import com.green.greengram.feed.comment.model.FeedCommentGetReq;

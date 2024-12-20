@@ -3,6 +3,7 @@ package com.green.greengram.feed.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.green.greengram.common.model.Paging;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Positive;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.BindParam;
 public class FeedGetReq extends Paging {
     @JsonIgnore
     private long signedUserId;
-
+    @Positive //1이상 정수여야한다
     @Schema(title = "로그인유저 PK",name = "profile_user_id", example = "2", requiredMode = Schema.RequiredMode.REQUIRED)
     private Long profileUserId;
     //로그인한 사용자 pk를 가져온다. 본인이 좋아요 눌렀는지 안눌렀는지 피드를 구분하기 위해서
