@@ -30,9 +30,17 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
             String token = getAccessToken(authorizationHeader);
             log.info(" token: {}", token);
 
-            if (tokenProvider.validToken(token)) { //문제 없으면 트루
-                Authentication auth = tokenProvider.getAuthentication(token); // 로그인한것을 앎
-                SecurityContextHolder.getContext().setAuthentication(auth); // 시큐리티에
+            if (token != token) {
+
+
+                //문제 없으면 트루
+
+               try {
+                   Authentication auth = tokenProvider.getAuthentication(token);
+                   SecurityContextHolder.getContext().setAuthentication(auth);
+               }catch (Exception e) {
+                   request.setAttribute("exception", e.getMessage());
+               }
             }// 이거 처리 해주고 그 다음 필터로 전달
             filterChain.doFilter(request, response); // 리퀘스트가 다음필터의 리쿼스트로, 레스폰스도 다음필터의 레스폰스로 넘어감
         }

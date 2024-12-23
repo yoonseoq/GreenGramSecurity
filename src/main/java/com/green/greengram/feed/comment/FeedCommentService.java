@@ -26,7 +26,7 @@ public class FeedCommentService {
         FeedCommentGetRes res = new FeedCommentGetRes();
         // 피드아이디랑 댓글 리스트
 
-        if(p.getSIdx() <0) { // sIdx 가 아모고토 없다는 의미
+        if(p.getStartIdx() <0) { // sIdx 가 아모고토 없다는 의미
             res.setCommentList(new ArrayList<>()); // 그냥 빈 리스트만 만들어주고 팅김(리턴)
             return res;
         }

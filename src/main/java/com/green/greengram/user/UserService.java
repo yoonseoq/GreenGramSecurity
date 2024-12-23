@@ -2,6 +2,8 @@ package com.green.greengram.user;
 
 import com.green.greengram.common.CookieUtils;
 import com.green.greengram.common.MyFileUtils;
+import com.green.greengram.common.exception.CustomException;
+import com.green.greengram.common.exception.UserErrorCode;
 import com.green.greengram.config.jwt.JwtUser;
 import com.green.greengram.config.jwt.TokenProvider;
 import com.green.greengram.config.security.AuthenticationFacade;
@@ -67,18 +69,11 @@ public class UserService {
 
         UserSignInRes res = mapper.selUserByUid(p.getUid());
 
-        if (res == null) {
-            res = new UserSignInRes(); // 메세지 보낼려고 객체 생성
-            res.setMessage("아이디 확인 바람");
-            return res;
-        // else if ( !BCrypt.checkpw(p.getUpw(), res.getUpw())) { //비밀번호가 다를시
-        } else if ( !passwordEncoder.matches(p.getUpw(), res.getUpw())) {
-
-            res = new UserSignInRes();
-            res.setMessage("비번 확인 요망!");
-            return res;
-
+        if (res == null || !passwordEncoder.matches(p.getUpw(), res.getUpw())) {
+            throw new CustomException(UserErrorCode.INCORRECT_ID_PW);
         }
+
+
         /*
          한별씨 이제 뭐해야하죠? -> 잘 모르겠습니다. 로그인시켜줘야죠
          인증처리 jwt 해줘야 한다
@@ -93,7 +88,7 @@ public class UserService {
         jwtUser.getRoles().add("ROLE_USER");
         jwtUser.getRoles().add("ROLE_ADMIN");
 
-        String accessToken = tokenProvider.generateToken(jwtUser, Duration.ofMinutes(1));;
+        String accessToken = tokenProvider.generateToken(jwtUser, Duration.ofSeconds(30));;
         String refreshToken = tokenProvider.generateToken(jwtUser, Duration.ofDays(15));
 
         int maxAge = 1_296_000;
@@ -117,7 +112,7 @@ public class UserService {
         log.info("refreshToken: {}", refreshToken);
 
         JwtUser jwtUser = tokenProvider.getJwtUser(refreshToken);
-        return tokenProvider.generateToken(jwtUser, Duration.ofMinutes(100));
+        return tokenProvider.generateToken(jwtUser, Duration.ofMinutes(30));
         // 바디에 토큰 받아서 보내는것은 별로
         // 인증할때 security 프레임 워크 사용
     }

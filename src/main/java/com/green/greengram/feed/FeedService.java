@@ -1,6 +1,8 @@
 package com.green.greengram.feed;
 
 import com.green.greengram.common.MyFileUtils;
+import com.green.greengram.common.exception.CustomException;
+import com.green.greengram.common.exception.FeedErrorCode;
 import com.green.greengram.config.security.AuthenticationFacade;
 import com.green.greengram.feed.comment.FeedCommentMapper;
 import com.green.greengram.feed.comment.model.FeedCommentDto;
@@ -34,7 +36,9 @@ public class FeedService {
     public FeedPostRes postFeed(List<MultipartFile> pics, FeedPostReq p) {
         p.setWriterUserId(authenticationFacade.getSignedUserId());
         int result = feedMapper.insFeed(p); // 피드정보 가져옴
-
+        if (result == 0) {
+        throw new CustomException(FeedErrorCode.FAIL_TO_REG)
+        }
         long feedId = p.getFeedId(); // 피드아이디 가져와서 변수 만들기
 
         String middlePath = String.format("feed/%d/", feedId);

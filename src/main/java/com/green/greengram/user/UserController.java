@@ -5,6 +5,7 @@ import com.green.greengram.user.model.*;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +23,7 @@ public class UserController {
     }
 
     @PostMapping("sign-in")
-    public ResultResponse<UserSignInRes> signIn(@RequestBody UserSignInReq p, HttpServletResponse response) {
+    public ResultResponse<UserSignInRes> signIn(@Valid @RequestBody UserSignInReq p, HttpServletResponse response) {
         UserSignInRes res = service.selUserList(p, response);
         return ResultResponse.<UserSignInRes>builder()
                 .resultMessage(res.getMessage())

@@ -1,5 +1,8 @@
 package com.green.greengram.common.exception;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
@@ -22,6 +25,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     //우리가 커스텀한 예외가 발생되었을 경우 캐치
     @ExceptionHandler({CustomException.class})
     public ResponseEntity<Object> handleCustomException(final CustomException e) {
+        log.error("CustomException - ", e);
         return handleExceptionInternal(e.getErrorCode());
     }
 
@@ -32,6 +36,21 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                                                                   HttpStatusCode statusCode,
                                                                   WebRequest request){
         return handleExceptionInternal(CommonErrorCode.INVALID_PARAMETER,ex);
+    }
+
+    @ExceptionHandler(SignatureException.class)
+    public ResponseEntity<Object> handleBindException() {
+        return handleExceptionInternal(UserErrorCode.UNAUTHENTICATED);
+    }
+
+    @ExceptionHandler(MalformedJwtException.class)
+    public ResponseEntity<Object> handleMalformedException() {
+        return handleExceptionInternal(UserErrorCode.INVALID_TOKEN);
+    }
+
+    @ExceptionHandler(ExpiredJwtException.class)
+    public ResponseEntity<Object> handleExpiredException() {
+        return handleExceptionInternal(UserErrorCode.EXPIRED_TOKEN);
     }
 
     private ResponseEntity<Object> handleExceptionInternal(ErrorCode errorCode) {

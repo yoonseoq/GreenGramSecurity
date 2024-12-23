@@ -14,7 +14,7 @@ import java.beans.ConstructorProperties;
 @Schema(title = "피드 댓글 리스트 요청")
 public class FeedCommentGetReq {
     //public final int DEFAULT_PAGE_SIZE = 20; Constant 에서 값을 가져옴
-    private final int   FIRST_COMMENT_SIZE = 3;
+    private final static int   FIRST_COMMENT_SIZE = 3;
     /*
      private 붙으면 게터세터 옶으면 아모고토 못함
      (다른 클래스에서 해당 멤버필드를 소환하거나 그  클래스에서 따로설정)
@@ -30,7 +30,7 @@ public class FeedCommentGetReq {
     @Schema(title = "튜플시작 index",description = "댓글, Element 갯수를 보내주면 된다",name = "start_idx"
             , example = "3", requiredMode = Schema.RequiredMode.REQUIRED)
     // private int page; 페이지는 필요없어짐
-    private int sIdx;
+    private int startIdx;
 
     @Min(value = 20, message = "사이즈는 20이상이어야 합니다" )
     @Schema(title = "페이지당 아이템 수", description = "default = 20", example = "20")
@@ -38,9 +38,9 @@ public class FeedCommentGetReq {
 
 
     @ConstructorProperties({"feed_id","start_idx","size"})
-    public FeedCommentGetReq(long feedId, int sIdx, Integer size) {
+    public FeedCommentGetReq(long feedId, int startIdx, Integer size) {
         this.feedId = feedId;
-        this.sIdx = sIdx;
+        this.startIdx = startIdx;
         this.size = (size == null ? Constants.getDefault_page_size():size)+1;
     }
 }
