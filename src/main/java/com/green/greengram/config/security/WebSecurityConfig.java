@@ -10,6 +10,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -32,19 +33,20 @@ public class WebSecurityConfig {
 
                         req.requestMatchers("/api/feed","/api/feed/**").authenticated()
                          //나머지 요청은 모두 허용                                                          피드밑에 모든것은 다 로그인 되어야 한다
-                            .requestMatchers(HttpMethod.GET,"api/user").authenticated()
-                            .requestMatchers(HttpMethod.PATCH,"api/user/pic").authenticated()
+                            .requestMatchers(HttpMethod.GET,"/api/user").authenticated()
+                            .requestMatchers(HttpMethod.PATCH,"/api/user/pic").authenticated()
                             .anyRequest().permitAll() //나머지 요청은 모두 허용                                                          피드밑에 모든것은 다 로그인 되어야 한다
 
-                )
-                .addFilterBefore(tokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                                         // 이 필터를 거치고  이 필터가 나옴
                 //tokenAuthenticationFilter 는 무슨일? 요청이 들어올때 마다
+                )
+                .exceptionHandling(e -> e.authenticationEntryPoint(jwtAuthenticationEntryPoint))
+                .addFilterBefore(tokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
     @Bean
-    public BCryptPasswordEncoder passwordEncoder() {
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 }

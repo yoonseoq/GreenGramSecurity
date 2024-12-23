@@ -14,6 +14,7 @@ import java.util.List;
 @Setter
 @Getter
 public class MyUserDetails implements UserDetails {
+
     private JwtUser jwtUser;
 
     @Override
@@ -27,10 +28,11 @@ public class MyUserDetails implements UserDetails {
 
     @Override
     public String getPassword() {
-        return "";
+        return null;
     }
+
     @Override
     public String getUsername() {
-        return "";
+        return null;
     }
 }

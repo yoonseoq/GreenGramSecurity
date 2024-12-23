@@ -37,8 +37,10 @@ public class FeedService {
         p.setWriterUserId(authenticationFacade.getSignedUserId());
         int result = feedMapper.insFeed(p); // 피드정보 가져옴
         if (result == 0) {
-        throw new CustomException(FeedErrorCode.FAIL_TO_REG)
+        throw new CustomException(FeedErrorCode.FAIL_TO_RAG);
         }
+
+         // 파일등록
         long feedId = p.getFeedId(); // 피드아이디 가져와서 변수 만들기
 
         String middlePath = String.format("feed/%d/", feedId);
@@ -67,7 +69,8 @@ public class FeedService {
             try {
                 myFileUtils.transferTo(pic, filePath); // 해당사진을 지정한 폴더경로로 보내줌
             } catch (IOException e) {
-                e.printStackTrace();
+                String delFolderPath = String.format("%s/%s", myFileUtils.getUploadPath(), middlePath);
+                throw new CustomException(FeedErrorCode.FAIL_TO_RAG);
             }
         }
 
@@ -90,6 +93,7 @@ public class FeedService {
 
     public List<FeedGetRes> getFeedList(FeedGetReq p) {
         p.setSignedUserId(authenticationFacade.getSignedUserId());
+
         List<FeedGetRes> list = feedMapper.selFeedList(p);
         for (FeedGetRes item : list) {
 
@@ -118,13 +122,16 @@ public class FeedService {
         //피드 리스트
         List<FeedGetRes> list = feedMapper.selFeedList(p);
 
-        //feed_id를 골라내야 한다.
+        if (list.size() == 0) {
+            return list;
+        }
 
+        //feed_id를 골라내야 한다.
+        list.stream().mapToLong(FeedGetRes::getFeedId).sum();
         List<Long> feedIds4 = list.stream().map(FeedGetRes::getFeedId).collect(Collectors.toList());
         List<Long> feedIds5 = list.stream().map(item -> ((FeedGetRes) item).getFeedId()).toList();
         List<Long> feedIds6 = list.stream().map(item -> {
-            return ((FeedGetRes) item).getFeedId();
-        }).toList();
+            return ((FeedGetRes) item).getFeedId();}).toList();
         // 대충 이런것들도 있다
 
         List<Long> feedIds = new ArrayList<>(list.size());
@@ -133,16 +140,14 @@ public class FeedService {
         }
         log.info("feedIds: {}", feedIds);
 
-        List<FeedPicSel> feedPicList = feedPicMapper.selPicListByFeedIds(feedIds);
-        // 위에 모아놓은 피드 아이디들로 피드 사진들 불러옴
+        List<FeedPicSel> feedPicList = feedPicMapper.selPicListByFeedIds(feedIds);     // 위에 모아놓은 피드 아이디들로 피드 사진들 불러옴
         log.info("feedPicList: {}", feedPicList);
 
-        Map<Long, List<String>> picHashMap = new HashMap<>();
-        //hashMap은 뭐하는 놈이지?
+        Map<Long, List<String>> picHashMap = new HashMap<>();     //hashMap 은 뭐하는 놈이지?
         for (FeedPicSel item : feedPicList) {
             long feedId = item.getFeedId();
             if (!picHashMap.containsKey(feedId)) {
-                picHashMap.put(feedId, new ArrayList<>());
+                picHashMap.put(feedId, new ArrayList<>(3));
             }
             List<String> pics = picHashMap.get(feedId);
             pics.add(item.getPic());

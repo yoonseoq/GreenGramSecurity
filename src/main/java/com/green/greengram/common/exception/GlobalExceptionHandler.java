@@ -22,10 +22,11 @@ import java.util.List;
 @RestControllerAdvice //AOP (Aspect Orientation Programming, 관점지향 프로그래밍)
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
-    //우리가 커스텀한 예외가 발생되었을 경우 캐치
+    //(추가 메소드
+    // )우리가 커스텀한 예외가 발생되었을 경우 캐치
     @ExceptionHandler({CustomException.class})
     public ResponseEntity<Object> handleCustomException(final CustomException e) {
-        log.error("CustomException - ", e);
+        log.error("CustomException - handlerException ", e);
         return handleExceptionInternal(e.getErrorCode());
     }
 
@@ -38,18 +39,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(CommonErrorCode.INVALID_PARAMETER,ex);
     }
 
-    @ExceptionHandler(SignatureException.class)
-    public ResponseEntity<Object> handleBindException() {
-        return handleExceptionInternal(UserErrorCode.UNAUTHENTICATED);
-    }
-
-    @ExceptionHandler(MalformedJwtException.class)
-    public ResponseEntity<Object> handleMalformedException() {
+    //토큰값이 유효하지 않거나 토큰이 오염되었을떄
+    @ExceptionHandler({MalformedJwtException.class, SignatureException.class})
+    public ResponseEntity<Object> handleMalformedJwtException() {
         return handleExceptionInternal(UserErrorCode.INVALID_TOKEN);
     }
 
-    @ExceptionHandler(ExpiredJwtException.class)
-    public ResponseEntity<Object> handleExpiredException() {
+    @ExceptionHandler(ExpiredJwtException.class) //토큰이 만료가 되었을 때
+    public ResponseEntity<Object> handleMalformedException() {
         return handleExceptionInternal(UserErrorCode.EXPIRED_TOKEN);
     }
 
