@@ -7,6 +7,7 @@ import com.green.greengram.feed.comment.model.FeedCommentGetRes;
 import com.green.greengram.feed.comment.model.FeedCommentPostReq;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.annotations.ParameterObject;
@@ -33,7 +34,7 @@ public class FeedCommentController {
     @Operation(summary = "피드 댓글 리스트", description = "댓글 더보기 처리 - 파라미터를 ModelAttribute 를 이용해서 받음")
     // 리퀘스트 파람은 컨트롤러에다 받음
     // @ModelAttribute 이걸 안쓰면 각 값을 일일이 넣어야 한다
-    public ResultResponse<FeedCommentGetRes> getFeedCommentList(@ParameterObject @ModelAttribute FeedCommentGetReq p){
+    public ResultResponse<FeedCommentGetRes> getFeedCommentList(@Valid @ParameterObject @ModelAttribute FeedCommentGetReq p){
        //피드랑 같이 딸려오는 댓글들
 
         log.info("FeedCommentController > getFeedCommentList > p : {}",p);//파라미터를 로그보 보내기

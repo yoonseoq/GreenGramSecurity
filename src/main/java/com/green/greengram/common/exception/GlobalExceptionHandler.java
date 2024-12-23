@@ -2,7 +2,6 @@ package com.green.greengram.common.exception;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
@@ -23,7 +22,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     //우리가 커스텀한 예외가 발생되었을 경우 캐치
     @ExceptionHandler({CustomException.class})
     public ResponseEntity<Object> handleCustomException(final CustomException e) {
-        return null;
+        return handleExceptionInternal(e.getErrorCode());
     }
 
     //Validation 에외가 발생되었을 경우 캐치
@@ -32,14 +31,34 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                                                                   HttpHeaders headers,
                                                                   HttpStatusCode statusCode,
                                                                   WebRequest request){
-        return null;
+        return handleExceptionInternal(CommonErrorCode.INVALID_PARAMETER,ex);
     }
 
-    private List<MyResultResponse.ValidationError> getValidationErrors(BindException e) {
+    private ResponseEntity<Object> handleExceptionInternal(ErrorCode errorCode) {
+        return handleExceptionInternal(errorCode, null);
+    }
+
+    private ResponseEntity<Object> handleExceptionInternal(ErrorCode errorCode,BindException e) {
+        return ResponseEntity.status(errorCode.getHttpStatus())
+                             .body(makeErrorResponse(errorCode, e));
+    }
+
+    private MyErrorResponse makeErrorResponse(ErrorCode errorCode, BindException e) {
+        //resultResponse 상속받음
+        return MyErrorResponse.builder()
+                .resultMessage(errorCode.getMessage())
+                .resultData(errorCode.name())
+                .valids(e == null ? null : getValidationErrors(e))
+                .build();
+    }
+
+
+    private List<MyErrorResponse.ValidationError> getValidationErrors(BindException e) {
         List<FieldError> fieldErrors =e.getBindingResult().getFieldErrors();
-        List<MyResultResponse.ValidationError> errors = new ArrayList<>(fieldErrors.size());
+
+        List<MyErrorResponse.ValidationError> errors = new ArrayList<>(fieldErrors.size());
         for(FieldError fieldError : fieldErrors){
-            errors.add(MyResultResponse.ValidationError.of(fieldError));
+            errors.add(MyErrorResponse.ValidationError.of(fieldError));
         }
         return errors;
     }

@@ -3,20 +3,20 @@ package com.green.greengram.common.exception;
 import com.green.greengram.common.model.ResultResponse;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import org.springframework.boot.context.properties.bind.validation.ValidationErrors;
 import org.springframework.validation.FieldError;
 
 import java.util.List;
 
 @Setter
 @SuperBuilder
-public class MyResultResponse extends ResultResponse<String> {
+public class MyErrorResponse extends ResultResponse<String> {
     //Validation 에러메세지 전달
 
     private final List<ValidationError> valids;
+    //null 일수도 있고 아닌수도 있고
+    // null 이면 내용 안나옴
 
     /*
     ValidationError 가 발생시 해당 에러의 메세지
