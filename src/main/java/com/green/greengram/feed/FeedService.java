@@ -152,18 +152,22 @@ public class FeedService {
 
     public List<FeedGetRes> getFeedList2(FeedGetReq p) {
 
-        List<FeedGetRes> list = new ArrayList<>(p.getSize());
-        //SELECT (1): feed + feed_pic
+       List<FeedGetRes> list = new ArrayList<>(p.getSize());
+       // 들어오는 p값의 수만큼 사이즈
+
+        //(1) 피드 + 사진
         List<FeedAndPicDto> feedAndPicDtoList = feedMapper.selFeedAndPicList(p);
         List<Long> feedIds = new ArrayList<>(list.size());
+
         FeedGetRes beforeFeedGetRes = new FeedGetRes();
         for (FeedAndPicDto feedAndPicDto : feedAndPicDtoList) {
-            if (beforeFeedGetRes.getFeedId() != feedAndPicDto.getFeedId()) {
-                // 그전거와 피드 아이디가 다를때?
-                beforeFeedGetRes = new FeedGetRes(); // 새로운 주소값
+            if (beforeFeedGetRes.getFeedId() != feedAndPicDto.getFeedId()){
+                // 만약에 기존에 있던 아이디와 해당이아디와 다르면
+                feedIds.add(feedAndPicDto.getFeedId());
+
+                beforeFeedGetRes = new FeedGetRes();
                 beforeFeedGetRes.setPics(new ArrayList<>(3));
-                list.add(beforeFeedGetRes); // 그리고 데이터 줄줄이 넣어줌
-                //리스트에 추가하는 순간 사이즈는 1이됨
+                list.add(beforeFeedGetRes);
                 beforeFeedGetRes.setFeedId(feedAndPicDto.getFeedId());
                 beforeFeedGetRes.setContents(feedAndPicDto.getContents());
                 beforeFeedGetRes.setLocation(feedAndPicDto.getLocation());
@@ -174,33 +178,28 @@ public class FeedService {
                 beforeFeedGetRes.setIsLike(feedAndPicDto.getIsLike());
             }
             beforeFeedGetRes.getPics().add(feedAndPicDto.getPic());
-            //for문 돌면서 값 넣어줌
-            //그런데 두번째 사진이 똑같다면 그냥 사진만 추가함
         }
-        //SELECT (2): feed_comment
-        List<FeedCommentDto> feedCommentList = feedCommentMapper.selCommentListByFeedId(feedIds);
-        Map<Long, FeedCommentGetRes> commentHashMap = new HashMap<>();
-        for (FeedCommentDto item : feedCommentList) {
-            long feedId = item.getFeedId();
-            if (!commentHashMap.containsKey(feedId)) {
-                FeedCommentGetRes feedCommentGetRes = new FeedCommentGetRes();
-                feedCommentGetRes.setCommentList(new ArrayList<>(4));
-                commentHashMap.put(feedId, feedCommentGetRes);
-            }
-            FeedCommentGetRes feedCommentGetRes = commentHashMap.get(feedId);
-            feedCommentGetRes.getCommentList().add(item);
-        }
-        for (FeedGetRes res : list) {
-            FeedCommentGetRes feedCommentGetRes = commentHashMap.get(res.getFeedId());
-            if (feedCommentGetRes == null) { //댓글이 하나도 없었던 피드인 경우
-                feedCommentGetRes = new FeedCommentGetRes();
-                feedCommentGetRes.setCommentList(new ArrayList<>());
-            } else if (feedCommentGetRes.getCommentList().size() == 4) {
-                feedCommentGetRes.setMoreComment(true);
-                feedCommentGetRes.getCommentList().remove(feedCommentGetRes.getCommentList().size() - 1);
-            }
-            res.setComment(feedCommentGetRes);
-        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         return list;
     }
 
