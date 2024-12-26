@@ -8,13 +8,35 @@
                 contents = #{contents},
                 location = #{location}
     </insert>
+
     <select id="selFeedList">
-        SELECT feed.feed_id AS feedId, contents, location, feed.created_at AS createdAt
+        SELECT A.feed_id AS feedId, A.contents, A.location
+        , A.created_at AS createdAt
+        , B.user_id AS writerUserId
+        , IF(B.nick_name IS NULL, B.uid, B.nick_name) AS writerNm
+        , B.pic AS writerPic
+        , IF(C.feed_id IS NULL, 0, 1) AS isLike
+        FROM feed A
+        INNER JOIN user B
+        ON A.writer_user_id = B.user_id
+        LEFT JOIN feed_like C
+        ON A.feed_id = C.feed_id
+        AND C.user_id = #{signedUserId}
+        <if test=" profileUserId != null ">
+            WHERE A.writer_user_id = #{profileUserId}
+        </if>
+        ORDER BY A.feed_id DESC
+        LIMIT #{startIdx}, #{size}
+    </select>
+
+    <select id="selFeedListWithPic">
+        SELECT feed.feed_id AS feedId, feed.contents, feed.location
+        , feed.created_at AS createdAt
         , writer_user_id AS writerUserId
         , if(user.nick_name IS NULL , uid, nick_name) AS writerNm
         , pic AS writerPic
         , IF(feed_like.feed_id IS NULL,0,1) as isLike
-        , feed_like.*
+        , feed_pic.pic
         FROM feed
         INNER JOIN  user
         ON feed.writer_user_id=user.user_id
@@ -24,8 +46,78 @@
         <if test="profileUserId != null">
             where writer_user_id = #{profileUserId}
         </if>
+        inner JOIN feed_pic
+        ON feed.feed_id=feed_pic.feed_id
         ORDER BY FEED.feed_id DESC
         LIMIT #{sIdx}, #{size}
+    </select>
+
+    <resultMap id="feedResultMap" type="com.green.greengram.feed.model.FeedPicCommentDto">
+        <id property="feedId" column="feedId"/>
+        <result property="contents" column="contents" />
+        <result property="location" column="location" />
+        <result property="createdAt" column="createdAt" />
+        <result property="writerUserId" column="writerUserId" />
+        <result property="writerNm" column="writerNm" />
+        <result property="writerPic" column="writerPic" />
+        <result property="isLike" column="isLike" />
+        <collection property="pics" resultMap="feedPicResultMap"/>
+        <collection property="commentList" resultMap="feedCommentResultMap"/>
+    </resultMap>
+
+    <resultMap id="feedPicResultMap" type="String">
+        <result property="pic" column="pic"/>
+    </resultMap>
+
+    <resultMap id="feedCommentResultMap" type="com.green.greengram.feed.comment.model.FeedCommentDto">
+        <id property="feedCommentId" column="feed_comment_id" />
+        <result property="comment" column="comment"/>
+        <result property="writerUserId" column="commentWriterUserId"/>
+        <result property="writerUserId" column="commentWriterUserId"/>
+        <result property="writerNm" column="commentWriterNm"/>
+        <result property="writerPic" column="commentWriterPic"/>
+    </resultMap>
+
+    <select id="selFeedWithPicAndCommentList" resultMap="feedResultMap">
+        SELECT t1.*, t2.pic, t3.*
+        FROM (
+        SELECT feed.feed_id AS feedId, contents, location
+        , feed.created_at AS createdAt
+        , feed.writer_user_id AS writerUserId
+        , if(user.nick_name IS NULL , uid, nick_name) AS writerNm
+        , user.pic AS writerPic
+        , IF(feed_like.feed_id IS NULL,0,1) as isLike
+
+        FROM feed
+        INNER JOIN  user
+        ON feed.writer_user_id=user.user_id
+        LEFT JOIN feed_like
+        ON feed_like.feed_id=feed.feed_id
+        AND feed_like.user_id=#{signedUserId}
+        <if test=" profileUserId != null">
+            where a.writer_user_id =#{profileUserId}
+        </if>
+        ORDER BY FEED.feed_id DESC
+        LIMIT #{sIdx}, #{size}
+        ) t1
+        INNER JOIN feed_pic t2
+        ON t1.feedId = t2.feed_id
+        LEFT JOIN(
+        SELECT a.feed_id, a.feed_comment_id,a.`COMMENT`
+        , c.user_id AS commentUserId
+        , if(c.nick_name IS NULL, c.uid, c.nick_name) AS commentWriterNm
+        , c.pic AS commentWriterPic
+        FROM feed_comment a
+        left JOIN feed_comment b
+        ON a.feed_id = b.feed_id
+        AND a.feed_comment_id > b.feed_comment_id
+        INNER JOIN user c
+        ON a.user_id = c.user_id
+        GROUP BY a.feed_id,a.feed_comment_id, a.`COMMENT`
+        HAVING COUNT(a.feed_id) <![CDATA[ < ]]> 4
+        )t3
+        ON t1.feedId = t3.feed_id
+
     </select>
     <!--
 

@@ -36,7 +36,18 @@ public class FeedController {
     @Operation(summary = "FeedList",description = "loginUserId는 로그인한 사용자의 PK")
     public ResultResponse<List<FeedGetRes>> getFeedList(@Valid @ParameterObject @ModelAttribute FeedGetReq p) {
        log.info("FeedController > getFeedList > p : {}",p);
-        List<FeedGetRes> list = service.getFeedList3(p);
+        List<FeedGetRes> list = service.getFeedList2(p);
+        return ResultResponse.<List<FeedGetRes>>builder()
+                .resultMessage(String.format("%d rows",list.size()))
+                .resultData(list)
+                .build();
+    } // n+1이슈가 발생할수 있음
+
+    @GetMapping("ver4")
+    @Operation(summary = "FeedList",description = "loginUserId는 로그인한 사용자의 PK")
+    public ResultResponse<List<FeedGetRes>> getFeedListVer4(@Valid @ParameterObject @ModelAttribute FeedGetReq p) {
+       log.info("FeedController > getFeedList > p : {}",p);
+        List<FeedGetRes> list = service.getFeedList4(p);
         return ResultResponse.<List<FeedGetRes>>builder()
                 .resultMessage(String.format("%d rows",list.size()))
                 .resultData(list)
@@ -56,6 +67,13 @@ public class FeedController {
         log.info("feedIds : {}", feedIds);
 
     }*/
+
+
+
+
+
+
+
     @DeleteMapping
     @Operation(summary = "Feed 삭제", description = "피드의 댓글, 좋아요 모두 삭제처리")
     public ResultResponse<Integer> deleteFeed(@ParameterObject @ModelAttribute FeedDeleteReq p) {
@@ -65,4 +83,7 @@ public class FeedController {
                 .resultMessage("피드가 삭제됨")
                 .resultData(insult).build();
     }
+
+
+
 }
